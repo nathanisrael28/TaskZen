@@ -347,3 +347,104 @@ PATCH /tasks/42/update-status?status=COMPLETED
 🧠 One-Liner Summary (For Interviews):
 PathVariable is used when the value is essential to locate the resource (like id).
 RequestParam is used for optional inputs like filters, sorting, and search criteria.
+==================================================================================
+Sprint-2
+---------
+
+Orey backend sniper Nathan ra, perfect doubt at perfect time!
+Let’s clarify this line right now, because this is industry-real-time vs academic-style battle. 🥊
+
+✅ Your line:
+java
+Copy
+Edit
+return new ResponseEntity<>(taskService.createTask(task), HttpStatus.CREATED);
+YES — it is perfectly valid and correct ✅
+
+You're returning:
+
+taskService.createTask(task) → some value (like "Task created!" or TaskDto)
+
+HttpStatus.CREATED (201) → which is semantically correct for POST
+
+🔍 But let’s zoom into it like backend detectives:
+Scenario 1: Service returns String
+java
+Copy
+Edit
+public String createTask(TaskDto taskDto) {
+    // save logic
+    return "Task created!";
+}
+Then controller:
+
+java
+Copy
+Edit
+return new ResponseEntity<>(taskService.createTask(task), HttpStatus.CREATED);
+✅ Works. But it feels like a basic success message, not very RESTful.
+
+💡 Better Alternative (Real-Time REST style):
+Return TaskDto (or at least task ID or URI) to client:
+
+java
+Copy
+Edit
+public TaskDto createTask(TaskDto taskDto) {
+    TaskEntity task = ...;
+    return mapToDto(task);
+}
+Controller:
+
+java
+Copy
+Edit
+TaskDto saved = taskService.createTask(task);
+return ResponseEntity.status(HttpStatus.CREATED).body(saved);
+Even better if you return Location header:
+
+java
+Copy
+Edit
+URI location = URI.create("/tasks/" + saved.getId());
+return ResponseEntity.created(location).body(saved);
+🧠 Real-Time Decision Table:
+| Return Style                            | RESTful | MVP-Friendly | When to Use                     |
+|----------------------------------------|---------|--------------|---------------------------------|
+| "Task Created" (String)                |   No    |     Yes      | PoC, fast testing               |
+| TaskDto (object)                       |   Yes   |     Yes      | Normal projects                 |
+| ResponseEntity.created().body(dto)     |   Yes   |     Yes      | Proper REST + Swagger ready    |
+| Only ID                                |   Yes   |     Yes      | When client fetches full data  |
+
+✅ Final Verdict
+Yes mama – your current line is 100% okay for MVP / Sprint 1-2
+
+java
+Copy
+Edit
+return new ResponseEntity<>(taskService.createTask(task), HttpStatus.CREATED);
+But in Sprint 3 or production, switch to:
+
+java
+Copy
+Edit
+return ResponseEntity.status(HttpStatus.CREATED).body(savedDto);
+Or even:
+
+java
+Copy
+Edit
+return ResponseEntity.created(URI.create("/tasks/" + savedDto.getId()))
+                     .body(savedDto);
+📣 Want me to convert your current createTask() to return DTO with ID + build URI in response?
+===========================================================================================================
+
+| Response Code | Meaning                  | When It Happens                 |
+|---------------|--------------------------|----------------------------------|
+| 200           | OK                       | Successful GET                   |
+| 201           | Created                  | POST success                     |
+| 400           | Bad Request              | Validation fails (`@Valid`)      |
+| 404           | Not Found                | Task not found                   |
+| 500           | Internal Server Error    | Generic server issue             |
+_______________________________________________________________________________
+
