@@ -1,13 +1,14 @@
 package com.nathan.taskzen.model;
 
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.nathan.taskzen.enums.Status;
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.persistence.*;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import com.nathan.taskzen.enums.Status;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
 
@@ -16,7 +17,7 @@ import java.time.LocalDate;
 public class TaskDto {
 
 
-    @Schema(description = "Unique ID of the task", example = "101")
+    @Schema(description = "Unique ID generated automatically")
     private Long id;
 
     @NotBlank(message = "Title is required")
@@ -27,8 +28,11 @@ public class TaskDto {
     private String description;
 
     @FutureOrPresent(message = "Due Date Can't be in Past Date")
-    @DateTimeFormat(pattern = "dd-MM-yyyy")
-    @Schema(description = "Due date in dd-MM-yyyy format", example = "01-07-2025")
+    //@DateTimeFormat(pattern = "dd-mm-yyyy")
+    //This only works for form-data or query parameters, not for @RequestBody JSON
+    //mm is for minutes and MM is for Months
+    @JsonFormat(pattern = "dd-MM-yyyy")
+    @Schema(description = "Due date in dd-mm-yyyy format", example = "01-07-2025")
     private LocalDate dueDate;
 
     @Schema(description = "Status of the task", example = "PENDING")

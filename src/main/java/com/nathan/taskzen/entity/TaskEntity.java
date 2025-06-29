@@ -15,6 +15,8 @@ public class TaskEntity {
     private Long id;
 
     @Column(nullable = false)
+    @NotBlank(message = "Title is required")
+    @Size(min = 3, message = "Title must be at least 3 characters")
     private String title;
 
     private String description;
@@ -43,11 +45,12 @@ public class TaskEntity {
         this.id = id;
     }
 
-    public @NotBlank(message = "Title is required") @Size(min = 3, message = "Title must be at least 3 characters") String getTitle() {
+
+    public  String getTitle() {
         return title;
     }
 
-    public void setTitle(@NotBlank(message = "Title is required") @Size(min = 3, message = "Title must be at least 3 characters") String title) {
+    public void setTitle( String title) {
         this.title = title;
     }
 
