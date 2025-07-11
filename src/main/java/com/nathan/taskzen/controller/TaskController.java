@@ -31,7 +31,7 @@ public class TaskController {
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
 
-    @PostMapping("/taskDto")
+    @PostMapping("/task")
     public ResponseEntity<String> createTask(@RequestBody @Valid TaskDto task) {
         return new ResponseEntity<>(taskService.createTask(task), HttpStatus.CREATED);
     }
